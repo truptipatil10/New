@@ -1,0 +1,290 @@
+package game;
+
+public class Card {
+	private int rank;
+	private int suit;
+	
+	public static final int ACE = 1;
+	public static final int TWO = 2;
+	public static final int THREE = 3;
+	public static final int FOUR = 4;
+	public static final int FIVE = 5;
+	public static final int SIX = 6;
+	public static final int SEVEN = 7;
+	public static final int EIGHT = 8;
+	public static final int NINE = 9;
+	public static final int TEN = 10;
+	public static final int JACK = 11;
+	public static final int QUEEN = 12;
+	public static final int KING = 13;
+	
+	public static final int SPADES = 1;
+	public static final int HEARTS = 2;
+	public static final int DIAMONDS = 3;
+	public static final int CLUBS = 4;
+	
+	private static final String SPADES_STRING = "S";
+	private static final String HEARTS_STRING = "H";
+	private static final String DIAMONDS_STRING = "D";
+	private static final String CLUBS_STRING = "C";
+	
+	private static final String ACE_STRING = "A";
+	private static final String JACK_STRING = "J";
+	private static final String QUEEN_STRING = "Q";
+	private static final String KING_STRING = "K";
+	
+	
+	
+	public Card (int rank, int suit) {
+		if ((rank >= ACE && rank <= KING) && (suit >= SPADES && suit <= CLUBS)) {
+			this.rank = rank;
+			this.suit = suit;
+		}
+		else {
+			System.out.println("Invalid rank and/or suit; Card initialized with zero values");
+		}
+	}
+	
+	public int getRank() {
+		return rank;
+	}
+	
+	public int getSuit() {
+		return suit;
+	}
+	
+	public Boolean isValid() {
+		return (rank >= ACE && rank <= KING) && (suit >= SPADES && suit <= CLUBS);
+	}
+	
+	public void setRank(int rank) {
+		if (rank >= ACE && rank <= KING) {
+			this.rank = rank;
+		}
+		else {
+			System.out.println("Invalid rank value");
+		}
+	}
+	
+	
+
+	public void setSuit(int suit) {
+		if (suit >= SPADES && suit <= CLUBS) {
+			this.suit = suit;
+		}
+		else {
+			System.out.println("Invalid suit value");
+		}
+	}
+	
+	//@Override
+	//public int hashCode() {
+		//return Objects.hash(rank, suit);
+	//}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Card other = (Card) obj;
+		return rank == other.rank && suit == other.suit;
+	}
+	
+	@Override
+	public String toString() {
+		String suitString = "";
+		String rankString = "";
+		switch (suit) {
+			case SPADES:
+				suitString = SPADES_STRING;
+				break;
+			case DIAMONDS:
+				suitString = DIAMONDS_STRING;
+				break;
+			case HEARTS:
+				suitString = HEARTS_STRING;
+				break;
+			case CLUBS:
+				suitString = CLUBS_STRING;
+				break;
+		}
+		switch (rank) {
+			case ACE:
+				rankString = ACE_STRING;
+				break;
+			case JACK:
+				rankString = JACK_STRING;
+				break;
+			case QUEEN:
+				rankString = QUEEN_STRING;
+				break;
+			case KING:
+				rankString = KING_STRING;
+				break;
+			default:
+				rankString = String.valueOf(rank);
+		}
+		return rankString+suitString;
+	}
+
+}
+............................................
+
+
+package game;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+public class Deck {
+private List<Card> deckOfCards;
+	
+	public Deck() {
+		this.deckOfCards = orderedListOfCards();
+	}
+
+	public List<Card> orderedListOfCards() {
+		List<Card> deckOfCards = new ArrayList<Card>();
+		for(int i=1;i<=4;i++) {
+			for(int j=1;j<=13;j++) {
+				Card c = new Card(j,i);
+				deckOfCards.add(c);
+			}
+		}
+		return deckOfCards;
+	}
+	
+	public List<Card> shuffleTheDeck(){
+		Collections.shuffle(deckOfCards);
+		return deckOfCards;
+	}
+	
+
+	public int deal(Map<Integer, Player> playerDetails) {
+		List<Card> list = shuffleTheDeck();
+		int host = 0;
+			Card in = list.remove(0);
+			Card out = list.remove(0);
+			for(Map.Entry<Integer, Player> element : playerDetails.entrySet()) {
+				if(element.getValue() == null) {
+					host = element.getKey();
+				}
+				else if((in == element.getValue().getChosenCard() && element.getValue().getChosenOrientation().equalsIgnoreCase("IN"))
+						|| (out == element.getValue().getChosenCard() && element.getValue().getChosenOrientation().equalsIgnoreCase("OUT"))) {
+					return element.getKey();
+				}
+			}
+			return host;
+	}
+}
+.........................................................
+package game;
+
+public class Player {
+	private int playerId;
+	private double betValue;
+	private Card chosenCard;
+	private String chosenOrientation;
+	
+	public Player() {}
+
+	public Player(int playerId, double betValue, Card chosenCard, String chosenOrientation) {
+		this.playerId = playerId;
+		this.betValue = betValue;
+		this.chosenCard = chosenCard;
+		this.chosenOrientation = chosenOrientation;
+	}
+
+	public int getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(int playerId) {
+		this.playerId = playerId;
+	}
+
+	public double getBetValue() {
+		return betValue;
+	}
+
+	public void setBetValue(double betValue) {
+		this.betValue = betValue;
+	}
+
+	public Card getChosenCard() {
+		return chosenCard;
+	}
+
+	public void setChosenCard(Card chosenCard) {
+		this.chosenCard = chosenCard;
+	}
+
+	public String getChosenOrientation() {
+		return chosenOrientation;
+	}
+
+	public void setChosenOrientation(String chosenOrientation) {
+		this.chosenOrientation = chosenOrientation;
+	}
+}
+...................................................................................
+
+package game;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+
+public class PlayGame {
+	public static void main(String[] args) {
+		Deck d = new Deck();
+//		System.out.println(d.orderedListOfCards());
+//		System.out.println(d.shuffleTheDeck());
+		Scanner s = new Scanner(System.in);	
+		System.out.println("Welcome to the Card Game ");
+		System.out.println("Enter number of players ");
+		int numberOfPlayers = s.nextInt();
+		Random random = new Random();
+		int host = random.nextInt(1,numberOfPlayers);
+		boolean canMoveForward = true;
+		
+		while(canMoveForward) {
+			Map<Integer,Player> playerDetails = new LinkedHashMap<Integer,Player>();
+			double sumOfAllBets = 0;
+			System.out.println("Player "+host+" Is Host ");
+			
+			for(int i=1;i<=numberOfPlayers;i++) {
+				if(host==i) {
+					playerDetails.put(i, null);
+				}else {
+					System.out.println("Player "+i+" Enter your card as RankAndSuit with space separated (1-13 and 1-4)");
+					int rank = s.nextInt();int suit = s.nextInt();
+					Card c = new Card(rank,suit);
+					System.out.println("Player "+i+" Enter Bet Value");
+					double bet = s.nextDouble();
+					System.out.println("Player "+i+" Enter In Or Out ");
+					String chosenOrientation = s.next();
+					Player p = new Player(i,bet,c,chosenOrientation);
+					playerDetails.put(i, p);
+					sumOfAllBets += p.getBetValue();
+				}
+			}
+			
+			System.out.println("Player "+d.deal(playerDetails)+" Is The Winner Here is Your Bet amount "+sumOfAllBets);
+			System.out.println("You Are The New Host ");
+			System.out.println("Enter Yes to continue   Enter NO to stop");
+			host = d.deal(playerDetails);
+			if(!s.next().equalsIgnoreCase("YES")) {
+				canMoveForward = false;
+				System.out.println("Thanks for Playing");
+			}	
+		}
+	}
+}
